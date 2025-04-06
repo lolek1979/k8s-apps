@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sw-movie-app
+spec:
+  selector:
+    app: sw-movie-app
+  ports:
+    - port: 80
+      targetPort: 3000

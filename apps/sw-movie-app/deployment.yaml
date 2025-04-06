@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sw-movie-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sw-movie-app
+  template:
+    metadata:
+      labels:
+        app: sw-movie-app
+    spec:
+      containers:
+        - name: sw-movie-app
+          image: pkonieczny321/sw-movie-app:latest
+          ports:
+            - containerPort: 3000
