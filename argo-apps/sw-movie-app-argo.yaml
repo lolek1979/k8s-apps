@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/lolek1979/sw-movie-app.git'
+    repoURL: 'https://github.com/lolek1979/sw-movie-app-k8s.git'
     targetRevision: HEAD
     path: apps/sw-movie-app
   destination:
