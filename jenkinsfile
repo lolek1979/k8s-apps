@@ -1,9 +1,16 @@
 #!/usr/bin/groovy
 
-node('docker-agent') {
+def imageName = param.imageName
+def imageTag = param.imageTag
+
+/** DEBUG
+def imageName = "pkonieczny321/sw-movie-app"
+def imageTag = "1.0.0"
+**/
+
+node('jenkins-docker-agent') {
     // Define image details. You can change the tag as needed (here it's hard-coded to "1.0.0")
-    def imageName = "pkonieczny321/sw-movie-app"
-    def imageTag = "1.0.0"
+
 
     stage('Checkout') {
         echo "Checking out sw-movie-app repository..."
