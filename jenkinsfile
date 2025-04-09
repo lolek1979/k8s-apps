@@ -1,8 +1,9 @@
 #!/usr/bin/groovy
 
-def imageName = param.imageName
-def imageTag = param.imageTag
-
+// def imageName = param.imageName
+// def imageTag = param.imageTag
+def imageName = "pkonieczny321/sw-movie-app"
+def imageTag = "1.0.0"
 /** DEBUG
 def imageName = "pkonieczny321/sw-movie-app"
 def imageTag = "1.0.0"
