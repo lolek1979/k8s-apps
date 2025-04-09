@@ -8,7 +8,6 @@ def imageTag = "1.0.0"
 def imageName = "pkonieczny321/sw-movie-app"
 def imageTag = "1.0.0"
 **/
-
 node('docker-agent') {
     // Define image details. You can change the tag as needed (here it's hard-coded to "1.0.0")
 
