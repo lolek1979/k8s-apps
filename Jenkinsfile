@@ -32,15 +32,12 @@ node('docker-agent') {
 
     stage('Push Docker Image') {
         echo "Logging in to Docker Hub and pushing the image..."
-        // Use withCredentials to access Docker Hub credentials.
-        withCredentials([usernamePassword(
-            credentialsId: 'docker-hub-creds',
-            usernameVariable: 'DOCKERHUB_USER',
-            passwordVariable: 'DOCKERHUB_PASSWORD'
-        )]) {
-            sh "docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}"
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+            sh '''
+                echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push ${imageName}:${imageTag}
+            '''
         }
-        sh "docker push ${imageName}:${imageTag}"
     }
 
     stage('Deploy via Argo CD') {
