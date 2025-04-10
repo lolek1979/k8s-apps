@@ -11,7 +11,7 @@ spec:
     path: apps/sw-movie-app
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: default
+    namespace: sw-movie-app
   syncPolicy:
     automated:
       prune: true
