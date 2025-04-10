@@ -41,7 +41,6 @@ node('docker-agent') {
     }
 
     stage('Deploy via Argo CD') {
-    steps {
         withCredentials([string(credentialsId: 'ARGOCD_AUTH_TOKEN', variable: 'ARGOCD_TOKEN')]) {
         sh '''
             echo "Token length: ${#ARGOCD_TOKEN}"
@@ -50,7 +49,6 @@ node('docker-agent') {
             argocd app wait sw-movie-app --health --timeout 120
         '''
         }
-    }
     }
 
     stage('Post Deployment') {
