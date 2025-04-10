@@ -43,12 +43,23 @@ node('docker-agent') {
     stage('Deploy via Argo CD') {
         withCredentials([string(credentialsId: 'ARGOCD_AUTH_TOKEN', variable: 'ARGOCD_TOKEN')]) {
         sh '''
-            set -x
+            # Create the application if it doesn't already exist
+            argocd app create sw-movie-app \
+            --repo https://github.com/lolek1979/sw-movie-app-k8s.git \
+            --path apps/sw-movie-app \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace default \
+            --grpc-web --insecure \
+            --auth-token "$ARGOCD_TOKEN" \
+            --server k8s.orb.local || echo "App may already exist"
+
+            # Sync the application
             argocd app sync sw-movie-app \
             --grpc-web --insecure \
             --auth-token "$ARGOCD_TOKEN" \
             --server k8s.orb.local
 
+            # Wait until the app is healthy
             argocd app wait sw-movie-app \
             --health \
             --timeout 120 \
