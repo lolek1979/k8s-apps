@@ -46,9 +46,7 @@ node('docker-agent') {
             # Create the application if it doesn't already exist
             argocd app create sw-movie-app \
             --repo https://github.com/lolek1979/sw-movie-app-k8s.git \
-            --path apps/sw-movie-app \
-            --dest-server https://kubernetes.default.svc \
-            --dest-namespace default \
+            --path apps/argo-apps \
             --grpc-web --insecure \
             --auth-token "$ARGOCD_TOKEN" \
             --server k8s.orb.local || echo "App may already exist"
