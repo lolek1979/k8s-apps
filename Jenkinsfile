@@ -43,6 +43,7 @@ node('docker-agent') {
     stage('Deploy via Argo CD') {
         withCredentials([string(credentialsId: 'ARGOCD_AUTH_TOKEN', variable: 'ARGOCD_TOKEN')]) {
         sh '''
+            set -x
             argocd app sync sw-movie-app \
             --grpc-web --insecure \
             --auth-token "$ARGOCD_TOKEN" \
