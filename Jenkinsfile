@@ -42,9 +42,9 @@ node('docker-agent') {
 
     stage('Deploy via Argo CD') {
         echo "Deploying sw-movie-app via Argo CD..."
-        withCredentials([string(credentialsId: 'argocd-token', variable: 'ARGOCD_TOKEN')]) {
+        withCredentials([string(credentialsId: 'argocd-token', variable: 'ARGOCD_AUTH_TOKEN')]) {
             sh '''
-                argocd login k8s.orb.local --auth-token=$ARGOCD_TOKEN --grpc-web --insecure
+                echo "$ARGOCD_AUTH_TOKEN" | argocd login k8s.orb.local --auth-token=$ARGOCD_AUTH_TOKEN --grpc-web --insecure
             '''
         }
         // Trigger a sync of the sw-movie-app Argo CD Application.
