@@ -23,7 +23,7 @@ node('docker-agent') {
             ]]
         ])
     }
-    sleep(3600)
+
     stage('Build Docker Image') {
         echo "Building Docker image ${imageName}:${imageTag}..."
         // Use the docker CLI available in the container to build the image.
