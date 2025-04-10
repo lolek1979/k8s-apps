@@ -43,10 +43,15 @@ node('docker-agent') {
     stage('Deploy via Argo CD') {
         withCredentials([string(credentialsId: 'ARGOCD_AUTH_TOKEN', variable: 'ARGOCD_TOKEN')]) {
         sh '''
-            echo "Token length: ${#ARGOCD_TOKEN}"
-            argocd login k8s.orb.local --auth-token=$ARGOCD_TOKEN --grpc-web --insecure
-            argocd app sync sw-movie-app
-            argocd app wait sw-movie-app --health --timeout 120
+            argocd app sync sw-movie-app \
+            --grpc-web --insecure \
+            --auth-token "$ARGOCD_TOKEN"
+
+            argocd app wait sw-movie-app \
+            --health \
+            --timeout 120 \
+            --grpc-web --insecure \
+            --auth-token "$ARGOCD_TOKEN"
         '''
         }
     }
