@@ -45,13 +45,15 @@ node('docker-agent') {
         sh '''
             argocd app sync sw-movie-app \
             --grpc-web --insecure \
-            --auth-token "$ARGOCD_TOKEN"
+            --auth-token "$ARGOCD_TOKEN" \
+            --server k8s.orb.local
 
             argocd app wait sw-movie-app \
             --health \
             --timeout 120 \
             --grpc-web --insecure \
-            --auth-token "$ARGOCD_TOKEN"
+            --auth-token "$ARGOCD_TOKEN" \
+            --server k8s.orb.local
         '''
         }
     }
