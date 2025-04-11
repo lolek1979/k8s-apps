@@ -1,7 +1,7 @@
 node('docker-agent') {
     def imageName = "pkonieczny321/sw-movie-app"
     def imageTag = "1.0.0"
-    def skipBuild - false
+    def skipBuild = false
 
     stage('Check if Docker Tag Exists') {
         echo "Checking if ${imageName}:${imageTag} already exists on Docker Hub..."
@@ -18,7 +18,7 @@ node('docker-agent') {
             echo "Docker image tag does not exist. Proceeding with build."
         }
     }
-    
+
     stage('Checkout App Source') {
         echo "Checking out sw-movie-app repository..."
         dir('sw-movie-app') {
