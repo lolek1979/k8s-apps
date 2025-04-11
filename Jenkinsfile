@@ -1,7 +1,24 @@
 node('docker-agent') {
     def imageName = "pkonieczny321/sw-movie-app"
     def imageTag = "1.0.0"
+    def skipBuild - false
 
+    stage('Check if Docker Tag Exists') {
+        echo "Checking if ${imageName}:${imageTag} already exists on Docker Hub..."
+        def status = sh (
+            script: """
+                curl --silent --fail https://hub.docker.com/v2/repositories/${imageName}/tags/${imageTag}/ > /dev/null
+            """,
+            returnStatus: true
+        )
+        if (status == 0) {
+            echo "Docker image ${imageName}:${imageTag} already exists. Skipping build & push."
+            skipBuild = true
+        } else {
+            echo "Docker image tag does not exist. Proceeding with build."
+        }
+    }
+    
     stage('Checkout App Source') {
         echo "Checking out sw-movie-app repository..."
         dir('sw-movie-app') {
@@ -29,47 +46,28 @@ node('docker-agent') {
             ])
         }
     }
-
-    stage('Build Docker Image') {
-        echo "Building Docker image ${imageName}:${imageTag}..."
-        dir('sw-movie-app') {
-            sh "docker build -t ${imageName}:${imageTag} ."
+    if (!skipBuild) {
+        stage('Build Docker Image') {
+            echo "Building Docker image ${imageName}:${imageTag}..."
+            dir('sw-movie-app') {
+                sh "docker build -t ${imageName}:${imageTag} ."
+            }
         }
-    }
 
-    stage('Push Docker Image') {
-        echo "Logging in to Docker Hub and pushing the image..."
-        withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-            sh '''
-                echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            '''
+        stage('Push Docker Image') {
+            echo "Logging in to Docker Hub and pushing the image..."
+            withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                sh '''
+                    echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                '''
+            }
+            sh "docker push ${imageName}:${imageTag}"
         }
-        sh "docker push ${imageName}:${imageTag}"
     }
 
     stage('Deploy Argo CD Application') {
         dir('sw-movie-app-k8s') {
             sh 'kubectl apply -f argo-apps/sw-movie-app-argo.yaml -n argocd'
-        }
-    }
-
-    stage('ArgoCD sync/health apps') {
-        withCredentials([string(credentialsId: 'argocd-token', variable: 'ARGOCD_TOKEN')]) {
-        sh '''
-            # Sync the application
-            argocd app sync sw-movie-app \
-            --grpc-web --insecure \
-            --auth-token "$ARGOCD_TOKEN" \
-            --server argocd-server.argocd.svc.cluster.local
-
-            # Wait until the app is healthy
-            argocd app wait sw-movie-app \
-            --health \
-            --timeout 120 \
-            --grpc-web --insecure \
-            --auth-token "$ARGOCD_TOKEN" \
-            --server argocd-server.argocd.svc.cluster.local
-        '''
         }
     }
 
