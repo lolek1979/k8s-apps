@@ -55,19 +55,21 @@ node('docker-agent') {
 
     stage('ArgoCD sync/health apps') {
         withCredentials([string(credentialsId: 'argocd-token', variable: 'ARGOCD_TOKEN')]) {
-            sh '''
-                argocd app sync sw-movie-app \
-                --grpc-web --insecure \
-                --auth-token "$ARGOCD_TOKEN" \
-                --server k8s.orb.local
+        sh '''
+            # Sync the application
+            argocd app sync sw-movie-app \
+            --grpc-web --insecure \
+            --auth-token "$ARGOCD_TOKEN" \
+            --server argocd-server.argocd.svc.cluster.local
 
-                argocd app wait sw-movie-app \
-                --health \
-                --timeout 120 \
-                --grpc-web --insecure \
-                --auth-token "$ARGOCD_TOKEN" \
-                --server k8s.orb.local
-            '''
+            # Wait until the app is healthy
+            argocd app wait sw-movie-app \
+            --health \
+            --timeout 120 \
+            --grpc-web --insecure \
+            --auth-token "$ARGOCD_TOKEN" \
+            --server argocd-server.argocd.svc.cluster.local
+        '''
         }
     }
 
