@@ -1,7 +1,7 @@
-#!bin/groovy
+#!/usr/bin/env groovy
 
-def imageName = param.imageName
-def imageTag = param.imageTag
+def imageName = params.imageName
+def imageTag = params.imageTag
 def skipBuild = false
 
 /** DEBUG
