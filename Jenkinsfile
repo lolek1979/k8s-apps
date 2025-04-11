@@ -1,7 +1,7 @@
 #!bin/groovy
 
-def imageName = param.imageName "pkonieczny321/sw-movie-app"
-def imageTag = param.imageTag "1.0.0"
+def imageName = param.imageName
+def imageTag = param.imageTag
 def skipBuild = false
 
 /** DEBUG
