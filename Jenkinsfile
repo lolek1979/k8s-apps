@@ -1,11 +1,15 @@
 #!/usr/bin/env groovy
 
-def imageName = params.imageName ?: "pkonieczny321/sw-movie-app"
-def imageTag = params.imageTag ?: "1.0.0"
+def imageName = "pkonieczny321/sw-movie-app"
+def imageTag = "1.0.0"
 def skipBuild = false
+
 /** DEBUG
 def imageName = "pkonieczny321/sw-movie-app"
 def imageTag = "1.0.0"
+def skipBuild = false
+def imageName = params.imageName ?: "pkonieczny321/sw-movie-app"
+def imageTag = params.imageTag ?: "1.0.0"
 def skipBuild = false
 **/
 node('docker-agent') {
