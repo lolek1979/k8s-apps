@@ -3,13 +3,11 @@
 def imageName = params.imageName
 def imageTag = params.imageTag
 def skipBuild = false
-
 /** DEBUG
 def imageName = "pkonieczny321/sw-movie-app"
 def imageTag = "1.0.0"
 def skipBuild = false
 **/
-
 node('docker-agent') {
     stage('Check if Docker Tag Exists') {
         echo "Checking if ${imageName}:${imageTag} already exists on Docker Hub..."
@@ -54,6 +52,7 @@ node('docker-agent') {
             ])
         }
     }
+
     if (!skipBuild) {
         stage('Build Docker Image') {
             echo "Building Docker image ${imageName}:${imageTag}..."
