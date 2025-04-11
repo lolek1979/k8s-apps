@@ -123,9 +123,3 @@ So any changes to manifests in this repo will auto-deploy.
 ## 📎 Related Repos
 
 - App source code: [sw-movie-app](https://github.com/<your-username>/sw-movie-app)
-
----
-
-## 📄 License
-
-MIT

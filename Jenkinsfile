@@ -41,15 +41,10 @@ node('docker-agent') {
     }
 
     stage('Deploy Argo CD Application') {
-        withCredentials([string(credentialsId: 'KUBECONFIG_CONTENT', variable: 'KUBECONFIG_CONTENT')]) {
-            writeFile file: 'kubeconfig.yaml', text: env.KUBECONFIG_CONTENT
-            withEnv(["KUBECONFIG=${env.WORKSPACE}/kubeconfig.yaml"]) {
-                sh '''
-                # Apply the Application YAML to register it with Argo CD
-                kubectl apply -f argo-apps/sw-movie-app-argo.yaml -n argocd
-                '''
-            }
-        }
+        sh '''
+        # Apply the Application YAML to register it with Argo CD
+        kubectl apply -f argo-apps/sw-movie-app-argo.yaml -n argocd
+        '''
     }
     stage('ArgoCD sync/health apps') {
         withCredentials([string(credentialsId: 'argocd-token', variable: 'ARGOCD_TOKEN')]) {
