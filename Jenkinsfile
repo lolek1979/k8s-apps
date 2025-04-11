@@ -1,5 +1,3 @@
-#!/usr/bin/env groovy
-
 def imageName = "pkonieczny321/sw-movie-app"
 def imageTag = "1.0.0"
 def skipBuild = false
