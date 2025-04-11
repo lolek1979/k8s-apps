@@ -40,17 +40,20 @@ node('docker-agent') {
         sh "docker push ${imageName}:${imageTag}"
     }
 
-    stage('Deploy via Argo CD') {
-        withCredentials([string(credentialsId: 'ARGOCD_AUTH_TOKEN', variable: 'ARGOCD_TOKEN')]) {
+    stage('Deploy Argo CD Application') {
+        withCredentials([string(credentialsId: 'KUBECONFIG_CONTENT', variable: 'KUBECONFIG_CONTENT')]) {
+            writeFile file: 'kubeconfig.yaml', text: env.KUBECONFIG_CONTENT
+            withEnv(["KUBECONFIG=${env.WORKSPACE}/kubeconfig.yaml"]) {
+                sh '''
+                # Apply the Application YAML to register it with Argo CD
+                kubectl apply -f argo-apps/sw-movie-app-argo.yaml -n argocd
+                '''
+            }
+        }
+    }
+    stage('ArgoCD sync/health apps') {
+        withCredentials([string(credentialsId: 'argocd-token', variable: 'ARGOCD_TOKEN')]) {
         sh '''
-            # Create the application if it doesn't already exist
-            argocd app create sw-movie-app \
-            --repo https://github.com/lolek1979/sw-movie-app-k8s.git \
-            --path apps/argo-apps \
-            --grpc-web --insecure \
-            --auth-token "$ARGOCD_TOKEN" \
-            --server k8s.orb.local || echo "App may already exist"
-
             # Sync the application
             argocd app sync sw-movie-app \
             --grpc-web --insecure \
