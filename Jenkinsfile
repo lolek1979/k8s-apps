@@ -12,16 +12,33 @@ node('docker-agent') {
     // Define image details. You can change the tag as needed (here it's hard-coded to "1.0.0")
 
 
-    stage('Checkout') {
+
+    stage('Checkout App Source') {
         echo "Checking out sw-movie-app repository..."
-        checkout([
-            $class: 'GitSCM',
-            branches: [[name: '*/main']],  // Adjust branch if needed
-            userRemoteConfigs: [[
-                url: 'https://github.com/lolek1979/sw-movie-app.git',
-                credentialsId: 'github-creds'
-            ]]
-        ])
+        dir('sw-movie-app') {
+            checkout([
+                $class: 'GitSCM',
+                branches: [[name: '*/main']],
+                userRemoteConfigs: [[
+                    url: 'https://github.com/lolek1979/sw-movie-app.git',
+                    credentialsId: 'github-creds'
+                ]]
+            ])
+        }
+    }
+
+    stage('Checkout K8s Manifests') {
+        echo "Checking out sw-movie-app-k8s repository..."
+        dir('sw-movie-app-k8s') {
+            checkout([
+                $class: 'GitSCM',
+                branches: [[name: '*/main']],
+                userRemoteConfigs: [[
+                    url: 'https://github.com/lolek1979/sw-movie-app-k8s.git',
+                    credentialsId: 'github-creds'
+                ]]
+            ])
+        }
     }
 
     stage('Build Docker Image') {
@@ -40,7 +57,7 @@ node('docker-agent') {
         sh "docker push ${imageName}:${imageTag}"
     }
 
-    stage('Deploy Argo CD Application') {
+    stage('Deploy ArgoCD Application') {
         sh '''
         # Apply the Application YAML to register it with Argo CD
         kubectl apply -f argo-apps/sw-movie-app-argo.yaml -n argocd
