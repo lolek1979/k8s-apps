@@ -1,8 +1,16 @@
-node('docker-agent') {
-    def imageName = "pkonieczny321/sw-movie-app"
-    def imageTag = "1.0.0"
-    def skipBuild = false
+#!bin/groovy
 
+def imageName = param.imageName "pkonieczny321/sw-movie-app"
+def imageTag = param.imageTag "1.0.0"
+def skipBuild = false
+
+/** DEBUG
+def imageName = "pkonieczny321/sw-movie-app"
+def imageTag = "1.0.0"
+def skipBuild = false
+**/
+
+node('docker-agent') {
     stage('Check if Docker Tag Exists') {
         echo "Checking if ${imageName}:${imageTag} already exists on Docker Hub..."
         def status = sh (
