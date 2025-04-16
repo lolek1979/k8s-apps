@@ -1,4 +1,4 @@
-# sw-movie-app-k8s
+# k8s-apps
 
 Kubernetes deployment manifests for the **Star Wars Movie App** (`sw-movie-app`).  
 This repository is designed to be used with **Argo CD** for GitOps-style continuous deployment.
