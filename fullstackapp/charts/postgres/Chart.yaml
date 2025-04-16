@@ -1,0 +1,5 @@
+# charts/postgres/Chart.yaml
+apiVersion: v2
+name: postgres
+description: Postgres chart
+version: 0.1.0

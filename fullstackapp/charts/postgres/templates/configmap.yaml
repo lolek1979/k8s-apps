@@ -1,0 +1,8 @@
+# charts/postgres/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "postgres.fullname" . }}-init
+data:
+  CreateDB.sql: |-
+{{ .Values.initScript | indent 4 }}

@@ -1,0 +1,37 @@
+# charts/postgres/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "postgres.fullname" . }}
+  labels:
+    app: {{ include "postgres.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "postgres.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "postgres.fullname" . }}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres
+          imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" }}
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: sqlscript
+              mountPath: /docker-entrypoint-initdb.d
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.user }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.password }}
+            - name: POSTGRES_DB
+              value: {{ .Values.db }}
+      volumes:
+        - name: sqlscript
+          configMap:
+            name: {{ include "postgres.fullname" . }}-init

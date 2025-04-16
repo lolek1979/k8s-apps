@@ -1,0 +1,9 @@
+# charts/postgres/values.yaml
+user: postgres
+password: postgres
+db: mydb
+initScript: |
+  CREATE TABLE text (
+      id serial PRIMARY KEY,
+      text VARCHAR (100) UNIQUE NOT NULL
+  );

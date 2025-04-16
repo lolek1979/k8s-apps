@@ -1,0 +1,11 @@
+# charts/postgres/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "postgres.fullname" . }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ include "postgres.fullname" . }}
+  ports:
+    - port: 5432

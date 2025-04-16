@@ -1,0 +1,5 @@
+# charts/backend/Chart.yaml
+apiVersion: v2
+name: backend
+description: Backend chart
+version: 0.1.0

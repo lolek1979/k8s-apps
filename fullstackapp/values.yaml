@@ -1,0 +1,47 @@
+# fullstackapp/values.yaml
+frontend:
+  image: pkonieczny321/fullstackapp-frontend:latest
+  imagePullPolicy: Always
+  port: 80                    # <--- container port for nginx
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80            # <--- match containerPort
+
+backend:
+  image: pkonieczny321/fullstackapp-backend:latest
+  imagePullPolicy: Always
+  port: 5000
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 5000
+  env:
+    DATABASE_URL: postgresql://postgres:postgres@fullstackapp-postgres:5432/mydb
+
+postgres:
+  user: postgres
+  password: postgres
+  db: mydb
+  initScript: |
+    CREATE TABLE text (
+        id serial PRIMARY KEY,
+        text VARCHAR (100) UNIQUE NOT NULL
+    );
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  host: fullstackapp.k8s.orb.local
+  tls:
+    enabled: true
+    secretName: fullstackapp-tls
+    certManager: true
+    clusterIssuer: letsencrypt
+  paths:
+    - path: /
+      serviceName: frontend
+      servicePort: 80
+    - path: /api
+      serviceName: backend
+      servicePort: 80
