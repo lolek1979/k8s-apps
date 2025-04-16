@@ -75,7 +75,7 @@ node('docker-agent') {
     }
 
     stage('Deploy Argo CD Application') {
-        dir('sw-movie-app-k8s') {
+        dir('sw-movie') {
             sh 'kubectl apply -f sw-movie/argo-apps/sw-movie-app-argo.yaml -n argocd'
         }
     }
