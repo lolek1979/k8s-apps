@@ -1,3 +1,6 @@
+global:
+  imageTag: 1.0.0
+  
 # fullstackapp/values.yaml
 frontend:
   image: pkonieczny321/fullstackapp-frontend:latest

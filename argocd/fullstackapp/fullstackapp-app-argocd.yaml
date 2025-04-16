@@ -1,0 +1,20 @@
+ apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fullstackapp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/lolek1979/k8s-apps.git'
+    targetRevision: HEAD
+    path: apps/fullstackapp
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: fullstackapp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

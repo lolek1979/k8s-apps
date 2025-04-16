@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ appName }}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/lolek1979/k8s-apps.git'
+    targetRevision: HEAD
+    path: apps/{{ appName }}
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: {{ appName }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+
+# You can easily copy this template and replace {{ appName }} with your actual app name like fullstackapp, sw-movie, etc.

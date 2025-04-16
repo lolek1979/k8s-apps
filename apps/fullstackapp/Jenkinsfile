@@ -1,0 +1,105 @@
+#!/usr/bin/env groovy
+
+def imageTag = "1.0.0"
+def images = [
+    [name: "frontend", image: "pkonieczny321/fullstackapp-frontend"],
+    [name: "backend", image: "pkonieczny321/fullstackapp-backend"]
+]
+
+node('docker-agent') {
+    stage('Checkout Repos') {
+        echo "Checking out app and k8s repos..."
+        parallel(
+            app: {
+                dir('fullstackapp') {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/lolek1979/fullstackapp.git',
+                            credentialsId: 'github-creds'
+                        ]]
+                    ])
+                }
+            },
+            k8s: {
+                dir('fullstackapp-k8s') {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/lolek1979/k8s-apps.git',
+                            credentialsId: 'github-creds'
+                        ]]
+                    ])
+                }
+            }
+        )
+    }
+
+    images.each { img ->
+        def shouldBuild = true
+
+        stage("Check ${img.name} Tag") {
+            echo "Checking if ${img.image}:${imageTag} exists..."
+            def status = sh(
+                script: """
+                    curl --silent --fail https://hub.docker.com/v2/repositories/${img.image.replaceAll('/', '%2F')}/tags/${imageTag}/ > /dev/null
+                """,
+                returnStatus: true
+            )
+            if (status == 0) {
+                echo "Image ${img.image}:${imageTag} exists. Skipping build."
+                shouldBuild = false
+            } else {
+                echo "Tag not found. Will build and push ${img.image}:${imageTag}"
+            }
+        }
+
+        if (shouldBuild) {
+            stage("Build ${img.name}") {
+                dir("fullstackapp/${img.name}") {
+                    sh "docker build -t ${img.image}:${imageTag} ."
+                }
+            }
+
+            stage("Push ${img.name}") {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                    sh '''
+                        echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                    '''
+                }
+                sh "docker push ${img.image}:${imageTag}"
+            }
+        }
+    }
+
+//     stage("Generate Helm Values File") {
+//         def values = """
+// frontend:
+//   image: ${images[0].image}
+//   imageTag: ${imageTag}
+
+// backend:
+//   image: ${images[1].image}
+//   imageTag: ${imageTag}
+// """
+//         writeFile file: 'values.generated.yaml', text: values
+//     }
+
+//     stage("Helm Upgrade") {
+//         dir('fullstackapp-k8s/fullstackapp') {
+//             sh "helm upgrade --install fullstackapp . -f ../../values.generated.yaml --namespace fullstack --create-namespace"
+//         }
+//     }
+
+//     stage("Deploy ArgoCD App") {
+//         dir('fullstackapp-k8s/argo-apps') {
+//             sh "kubectl apply -f fullstackapp-argo.yaml -n argocd"
+//         }
+//     }
+
+//     stage("Done") {
+//         echo "🎉 Deployment pipeline complete!"
+//     }
+}
