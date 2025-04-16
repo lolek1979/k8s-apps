@@ -8,7 +8,7 @@ This repository is designed to be used with **Argo CD** for GitOps-style continu
 ## 📦 Project Structure
 
 ```
-sw-movie-app-k8s/
+k8s-apps/
 ├── apps/
 │   └── sw-movie-app/
 │       ├── deployment.yaml              # App Deployment
@@ -43,8 +43,8 @@ sw-movie-app-k8s/
 ### 1. Clone This Repo
 
 ```bash
-git clone https://github.com/<your-username>/sw-movie-app-k8s.git
-cd sw-movie-app-k8s
+git clone https://github.com/<your-username>/k8s-apps.git
+cd k8s-apps
 ```
 
 ### 2. Update Docker Image in `deployment.yaml`
