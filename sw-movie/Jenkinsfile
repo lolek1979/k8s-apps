@@ -1,13 +1,15 @@
 #!/usr/bin/env groovy
 
-def imageName = params.imageName ?: "pkonieczny321/sw-movie-app"
+def imageName = params.imageName ?: "pkonieczny321/fullstackapp"
 def imageTag = params.imageTag ?: "1.0.0"
 def skipBuild = false
+
 /** DEBUG
 def imageName = "pkonieczny321/sw-movie-app"
 def imageTag = "1.0.0"
 def skipBuild = false
 **/
+
 node('docker-agent') {
     stage('Check if Docker Tag Exists') {
         echo "Checking if ${imageName}:${imageTag} already exists on Docker Hub..."
@@ -46,7 +48,7 @@ node('docker-agent') {
                 $class: 'GitSCM',
                 branches: [[name: '*/main']],
                 userRemoteConfigs: [[
-                    url: 'https://github.com/lolek1979/sw-movie-app-k8s.git',
+                    url: 'https://github.com/lolek1979/k8s-apps.git',
                     credentialsId: 'github-creds'
                 ]]
             ])
@@ -74,7 +76,7 @@ node('docker-agent') {
 
     stage('Deploy Argo CD Application') {
         dir('sw-movie-app-k8s') {
-            sh 'kubectl apply -f argo-apps/sw-movie-app-argo.yaml -n argocd'
+            sh 'kubectl apply -f sw-movie/argo-apps/sw-movie-app-argo.yaml -n argocd'
         }
     }
 
