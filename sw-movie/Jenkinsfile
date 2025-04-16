@@ -42,8 +42,8 @@ node('docker-agent') {
     }
 
     stage('Checkout K8s Manifests') {
-        echo "Checking out sw-movie-app-k8s repository..."
-        dir('sw-movie-app-k8s') {
+        echo "Checking out k8s-apps repository..."
+        dir('sw-movie') {
             checkout([
                 $class: 'GitSCM',
                 branches: [[name: '*/main']],
