@@ -75,7 +75,7 @@ node('docker-agent') {
     }
     stage('Deploy Argo CD Application') {
         dir('k8s') {
-            sh 'kubectl apply -f fullstackapp/argo-apps/fullstackapp-app-argocd.yaml -n argocd'
+            sh 'kubectl apply -f argocd/fullstackapp/fullstackapp-argocd.yaml -n argocd'
         }
     }
 
