@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def imageName = params.imageName ?: "pkonieczny321/fullstackapp"
+def imageName = params.imageName ?: "pkonieczny321/sw-movie"
 def imageTag = params.imageTag ?: "1.0.0"
 def skipBuild = false
 

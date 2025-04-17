@@ -1,6 +1,15 @@
 #!/usr/bin/env groovy
 
-def imageTag = "1.0.0"
+properties([
+    parameters([
+        string(name: 'imageTag', defaultValue: '1.0.0', description: 'Image tag to build and push'),
+        choice(name: 'buildComponent', choices: ['all', 'frontend', 'backend'], description: 'Which component to build'),
+    ])
+])
+
+def imageTag = params.imageTag
+def buildComponent = params.buildComponent
+
 def images = [
     [name: "frontend", image: "pkonieczny321/fullstackapp-frontend"],
     [name: "backend", image: "pkonieczny321/fullstackapp-backend"]
@@ -38,10 +47,15 @@ node('docker-agent') {
     }
 
     images.each { img ->
+        if (buildComponent != "all" && buildComponent != img.name) {
+            echo "⏩ Skipping ${img.name} because it's not selected"
+            return
+        }
+
         def shouldBuild = true
 
         stage("Check ${img.name} Tag") {
-            echo "Checking if ${img.image}:${imageTag} exists..."
+            echo "🔍 Checking if ${img.image}:${imageTag} exists on Docker Hub..."
             def status = sh(
                 script: """
                     curl --silent --fail https://hub.docker.com/v2/repositories/${img.image.replaceAll('/', '%2F')}/tags/${imageTag}/ > /dev/null
@@ -49,16 +63,16 @@ node('docker-agent') {
                 returnStatus: true
             )
             if (status == 0) {
-                echo "Image ${img.image}:${imageTag} exists. Skipping build."
+                echo "✅ Image ${img.image}:${imageTag} exists. Skipping build."
                 shouldBuild = false
             } else {
-                echo "Tag not found. Will build and push ${img.image}:${imageTag}"
+                echo "🚧 Tag not found. Will build and push ${img.image}:${imageTag}"
             }
         }
 
         if (shouldBuild) {
             stage("Build ${img.name}") {
-                dir("fullstackapp/${img.name}") {
+                dir("app/${img.name}") {
                     sh "docker build -t ${img.image}:${imageTag} ."
                 }
             }
@@ -73,6 +87,7 @@ node('docker-agent') {
             }
         }
     }
+
     stage('Deploy Argo CD Application') {
         dir('k8s') {
             sh 'kubectl apply -f argocd/fullstackapp/fullstackapp-argocd.yaml -n argocd'
@@ -80,6 +95,6 @@ node('docker-agent') {
     }
 
     stage('Post Deployment') {
-        echo "Deployment triggered successfully. Check Argo CD for the updated fullstackapp status."
+        echo "🚀 Deployment triggered. Check Argo CD for fullstackapp sync status."
     }
 }
