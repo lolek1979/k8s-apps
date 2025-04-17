@@ -3,7 +3,7 @@ global:
   
 # fullstackapp/values.yaml
 frontend:
-  image: pkonieczny321/fullstackapp-frontend:latest
+  image: pkonieczny321/fullstackapp-frontend
   imagePullPolicy: Always
   port: 80                    # <--- container port for nginx
   service:
@@ -12,7 +12,7 @@ frontend:
     targetPort: 80            # <--- match containerPort
 
 backend:
-  image: pkonieczny321/fullstackapp-backend:latest
+  image: pkonieczny321/fullstackapp-backend
   imagePullPolicy: Always
   port: 5000
   service:
