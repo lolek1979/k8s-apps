@@ -3,6 +3,7 @@ apiVersion: v2
 name: fullstackapp
 description: Umbrella chart for frontend, backend, and PostgreSQL
 version: 0.1.0
+appVersion: "1.0.0" 
 dependencies:
   - name: frontend
     version: 0.1.0

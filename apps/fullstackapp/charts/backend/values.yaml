@@ -1,3 +1,6 @@
+global:
+  imageTag: 1.0.0
+  
 # charts/backend/values.yaml
 image: pkonieczny321/fullstackapp-backend:latest
 port: 5000
