@@ -9,6 +9,9 @@ spec:
     repoURL: 'https://github.com/lolek1979/k8s-apps.git'
     targetRevision: HEAD
     path: apps/fullstackapp
+    helm:
+      valueFiles:
+        - values.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: fullstackapp
