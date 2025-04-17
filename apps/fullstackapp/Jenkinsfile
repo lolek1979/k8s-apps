@@ -8,7 +8,7 @@ def images = [
 
 node('docker-agent') {
     stage('Checkout Repos') {
-        echo "Checking out app and k8s repos..."
+        echo "Checking out apps and k8s repos..."
         parallel(
             app: {
                 dir('fullstackapp') {
@@ -73,33 +73,4 @@ node('docker-agent') {
             }
         }
     }
-
-//     stage("Generate Helm Values File") {
-//         def values = """
-// frontend:
-//   image: ${images[0].image}
-//   imageTag: ${imageTag}
-
-// backend:
-//   image: ${images[1].image}
-//   imageTag: ${imageTag}
-// """
-//         writeFile file: 'values.generated.yaml', text: values
-//     }
-
-//     stage("Helm Upgrade") {
-//         dir('fullstackapp-k8s/fullstackapp') {
-//             sh "helm upgrade --install fullstackapp . -f ../../values.generated.yaml --namespace fullstack --create-namespace"
-//         }
-//     }
-
-//     stage("Deploy ArgoCD App") {
-//         dir('fullstackapp-k8s/argo-apps') {
-//             sh "kubectl apply -f fullstackapp-argo.yaml -n argocd"
-//         }
-//     }
-
-//     stage("Done") {
-//         echo "🎉 Deployment pipeline complete!"
-//     }
 }
