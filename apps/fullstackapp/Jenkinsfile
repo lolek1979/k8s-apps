@@ -11,7 +11,7 @@ node('docker-agent') {
         echo "Checking out apps and k8s repos..."
         parallel(
             app: {
-                dir('fullstackapp') {
+                dir('app') {
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: '*/main']],
@@ -23,7 +23,7 @@ node('docker-agent') {
                 }
             },
             k8s: {
-                dir('fullstackapp-k8s') {
+                dir('k8s') {
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: '*/main']],
@@ -72,5 +72,14 @@ node('docker-agent') {
                 sh "docker push ${img.image}:${imageTag}"
             }
         }
+    }
+    stage('Deploy Argo CD Application') {
+        dir('k8s') {
+            sh 'kubectl apply -f fullstackapp/argo-apps/fullstackapp-app-argocd.yaml -n argocd'
+        }
+    }
+
+    stage('Post Deployment') {
+        echo "Deployment triggered successfully. Check Argo CD for the updated fullstackapp status."
     }
 }
