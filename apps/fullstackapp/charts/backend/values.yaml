@@ -1,8 +1,5 @@
-global:
-  imageTag: 1.0.0
-  
 # charts/backend/values.yaml
-image: pkonieczny321/fullstackapp-backend:latest
+image: pkonieczny321/fullstackapp-backend
 port: 5000
 service:
   type: ClusterIP

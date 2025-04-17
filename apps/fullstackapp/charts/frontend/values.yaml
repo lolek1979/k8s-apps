@@ -1,5 +1,5 @@
 # charts/frontend/values.yaml
-image: pkonieczny321/fullstackapp-frontend:latest
+image: pkonieczny321/fullstackapp-frontend
 port: 80
 service:
   type: ClusterIP
